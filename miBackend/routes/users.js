@@ -1,48 +1,51 @@
 const express = require("express");
+const multer = require('multer');
 const path = require('path');
-const formidable = require("formidable");
+const fs = require('fs'); // Importa el módulo fs
 const router = express.Router();
+
+const helperImg = (filePath, size = 300) => {
+
+}
+// Configuración de Multer para manejar la carga de imágenes
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads')
+  },
+  filename: (req, file, cb) => {
+    const ext = file.originalname.split('.').pop()
+    cb(null, `${Date.now()}.${ext}`)
+  }
+})
+
+const upload = multer({ storage });
 
 const connectToDb = require("../database/dbmysql");
 
 // Endpoint para agregar un nuevo usuario con nombre, apellido y foto
-router.post("/", (req, res) => {
-  const form = new formidable.IncomingForm();
+router.post("/", upload.single("foto"), async (req, res) => {
+  try {
+    // Obtén los datos del formulario (nombre, apellido) desde req.body
+    const { nombre, apellido } = req.body;
 
-  form.parse(req, async (err, fields, files) => {
-    if (err) {
-      console.error("Error al analizar el formulario:", err);
-      return res.status(500).json({ error: "Error al procesar la solicitud" });
-    }
+    const nombreArchivo = req.file.originalname;
+    fs.renameSync(req.file.path, path.join('uploads', nombreArchivo));
 
-    const { nombre, apellido } = fields;
-    const foto = files.foto;
+    // Realiza una consulta a la base de datos para insertar el nuevo usuario
+    const dbConnection = await connectToDb();
 
-    try {
-      if (!foto) {
-        return res.status(400).json({ error: "Debes cargar una foto" });
-      }
+    // Inserta el usuario en la base de datos con la imagen en formato base64
+    const sql = "INSERT INTO users (name, lnam, imag) VALUES (?, ?, ?)";
+    const [result] = await dbConnection.execute(sql, [nombre, apellido, nombreArchivo]);
 
-      // Verifica el tamaño de la imagen (por ejemplo, si no debe superar los 5 MB)
-      const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB
-      if (foto.size > maxSizeInBytes) {
-        return res.status(400).json({ error: "La imagen es demasiado grande" });
-      }
-
-      // Convierte la foto a una cadena base64
-      const fotoBase64 = foto.toString("base64");
-
-      const dbConnection = await connectToDb();
-      const sql = "INSERT INTO users (name, lnam, imag) VALUES (?, ?, ?)";
-      const [result] = await dbConnection.execute(sql, [nombre, apellido, fotoBase64]);
-
-      res.json({ message: "Usuario agregado correctamente", userId: result.insertId });
-    } catch (error) {
-      console.error(`Error al agregar el usuario: ${error.message}`);
-      res.status(500).json({ error: "Error al agregar el usuario" });
-    }
-  });
+    res.json({ message: "Usuario agregado correctamente", userId: result.insertId });
+    console.log(req.file.path);
+  } catch (error) {
+    console.error(`Error al agregar el usuario: ${error.message}`);
+    res.status(500).json({ error: "Error al agregar el usuario" });
+  }
 });
+
 
 router.get('/', async (req, res) => {
   try {
@@ -52,8 +55,10 @@ router.get('/', async (req, res) => {
 
     // Mapea los resultados para incluir una propiedad 'foto' con la URL de la imagen
     const usersWithImages = rows.map(user => ({
-      ...user,
-      foto: `data:image/jpeg;base64,${user.imag}`,
+      id: user.id,
+      name: user.name,
+      lnam: user.lnam,
+      imag: `/uploads/${user.imag}` // Asigna la URL de la imagen
     }));
     console.log(usersWithImages); // Agrega esta línea
     res.json(usersWithImages);

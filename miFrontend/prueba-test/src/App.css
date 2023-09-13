@@ -1,42 +1,76 @@
-#root {
-  max-width: 1280px;
+.container {
+  max-width: 600px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 20px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+h1, h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+p, label {
+  font-size: 12px;
+  margin-bottom: 20px;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.user-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.card {
-  padding: 2em;
+.user-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+  width: calc(33.33% - 20px); /* Para mostrar tres tarjetas por fila */
+  margin-bottom: 20px;
 }
 
-.read-the-docs {
-  color: #888;
+.user-info {
+  margin-bottom: 10px;
 }
+
+.user-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+input[type="text"],
+input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.error-message {
+  color: #ff0000;
+}
+

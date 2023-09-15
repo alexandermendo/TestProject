@@ -58,7 +58,7 @@ router.get('/', async (req, res) => {
       id: user.id,
       name: user.name,
       lnam: user.lnam,
-      imag: `/uploads/${user.imag}` // Asigna la URL de la imagen
+      imag: `${user.imag}` // Asigna la URL de la imagen
     }));
     console.log(usersWithImages); // Agrega esta línea
     res.json(usersWithImages);

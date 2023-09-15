@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { url } from '../../../common/utils'
 import './App.css';
 
 function App() {
@@ -8,7 +9,7 @@ function App() {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const response = await fetch('http://localhost:3000/users/'); // Ajusta la URL según la ruta de tu backend
+        const response = await fetch(`${url}/users/`); // Ajusta la URL según la ruta de tu backend
 
         if (!response.ok) {
           throw new Error(`Error al obtener la lista de usuarios: ${response.statusText}`);
@@ -49,7 +50,7 @@ function App() {
       formDataToSend.append('apellido', apellido);
       formDataToSend.append('foto', foto);
 
-      const response = await fetch('http://localhost:3000/users/', {
+      const response = await fetch(`${url}/users/`, {
         method: 'POST',
         body: formDataToSend,
       });
@@ -68,16 +69,16 @@ function App() {
         <h1>Lista de Usuarios</h1>
         <div className="user-list">
           {users.map(user => (
-            <div className="user-card" key={user.imag}>
+            <div className="user-card" key={user.id || user.name}>
               {user.imag && (
                 <div className="user-image">
                   {/* Utiliza la URL de la imagen en el atributo 'src' */}
-                  <img src={user.imag} alt={`Foto de ${user.name}`} />
+                  <img src={`${url}/uploads/${user.imag}`} alt={`Foto de ${user.name}`} />
                 </div>
               )}
               <div className="user-info">
-                <p><strong>Nombre:</strong> {user.name}</p>
-                <p><strong>Apellido:</strong> {user.lnam}</p>
+                <p>{user.name}</p>
+                <p>{user.lnam}</p>
               </div>
             </div>
           ))}
